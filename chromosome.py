@@ -51,7 +51,7 @@ class Chromosome:
             
             # Evaluate the simulated game state
             score = self.evaluate_state(simulated_state)
-            print(f"simulated score: {score} for move: {move}")
+            #print(f"simulated score: {score} for move: {move}")
 
             # If this move results in a better score, update the best move
             if score > best_score:

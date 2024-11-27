@@ -222,7 +222,7 @@ class TetrisGame:
                         wells += 1
         return wells
 
-    def setup_pygame(self):
+    def setup_pygame(self, draw_tetris_instance):
         # Screen dimensions
         screen_width = 300
         screen_height = 600
@@ -232,7 +232,7 @@ class TetrisGame:
         self.fall_time = 0
         self.score = 0
         self.draw_tetris_instance = DrawTetris(screen_width, screen_height, block_size)
-        self.clock = self.draw_tetris_instance.clock()
+        #self.clock = self.draw_tetris_instance.clock()
         self.run = True
         #self.fall_speed = 0.27
         self.fall_speed = 0.03
@@ -241,33 +241,70 @@ class TetrisGame:
         self.move_time = 0
         #self.move_speed = 1
         self.move_speed = 0.1
+        self.draw_index = draw_tetris_instance.get_new_index()
 
+    def setup_instance(self, draw_tetris_instance, draw_index):
+        self.fall_time = 0
+        self.score = 0
+        self.draw_tetris_instance = draw_tetris_instance
+        #self.clock = self.draw_tetris_instance.clock()
+        self.run = True
+        #self.fall_speed = 0.27
+        #self.fall_speed = 0.03
+        #self.fall_speed = 0.01
+        self.fall_speed = 0.005
+        self.fall_time = 0
 
-    def update_with_graphics(self):
+        self.move_time = 0
+        #self.move_speed = 1
+        #self.move_speed = 0.1
+        self.move_speed = 0.005
+        self.draw_index = draw_index
+
+#    def update_with_graphics(self):
+#        self.create_grid()
+#        self.fall_time += self.clock.get_rawtime()
+#        self.clock.tick()
+#
+#        if self.fall_time / 1000 >= self.fall_speed:
+#            self.fall_time = 0
+#            self.run = self.update_game_state()
+#
+#        self.draw_tetris_instance.key_events(self)
+#
+#        self.draw_tetris_instance.draw_grid(self.grid)
+#        self.draw_tetris_instance.draw_current_piece(self)
+#        
+#        score = self.calculate_score()
+#        self.draw_tetris_instance.draw_text(f"Score: {score}", 30, (255, 255, 255), 10, 10)
+#        #clear_rows(grid, game_instance.locked_positions)
+#        self.draw_tetris_instance.update()
+#        return self.run
+
+    def check_movement(self, chromosome):
+        self.move_time += self.draw_tetris_instance.clock.get_rawtime()
+        if self.move_time / 1000 >= self.move_speed:
+            self.move_time = 0
+            move = chromosome.choose_move(self, self.grid)  # Implement `choose_move` in chromosome
+            #print('move: ')
+            #print(move)
+            self.move(move)
+
+    def update_with_multiple_graphics(self):
         self.create_grid()
-        self.fall_time += self.clock.get_rawtime()
-        self.clock.tick()
+        self.fall_time += self.draw_tetris_instance.clock.get_rawtime()
+        self.draw_tetris_instance.clock.tick()
 
         if self.fall_time / 1000 >= self.fall_speed:
             self.fall_time = 0
             self.run = self.update_game_state()
 
-        self.draw_tetris_instance.key_events(self)
+        #draw_tetris_instance.key_events(self)
 
-        self.draw_tetris_instance.draw_grid(self.grid)
-        self.draw_tetris_instance.draw_current_piece(self)
+        self.draw_tetris_instance.draw_grid(self.grid, self.draw_index)
+        self.draw_tetris_instance.draw_current_piece(self, self.draw_index)
         
         score = self.calculate_score()
         self.draw_tetris_instance.draw_text(f"Score: {score}", 30, (255, 255, 255), 10, 10)
-        #clear_rows(grid, game_instance.locked_positions)
         self.draw_tetris_instance.update()
         return self.run
-
-    def check_movement(self, chromosome):
-        self.move_time += self.clock.get_rawtime()
-        if self.move_time / 1000 >= self.move_speed:
-            self.move_time = 0
-            move = chromosome.choose_move(self, self.grid)  # Implement `choose_move` in chromosome
-            print('move: ')
-            print(move)
-            self.move(move)
